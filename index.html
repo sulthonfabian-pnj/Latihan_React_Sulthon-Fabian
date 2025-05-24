@@ -1,0 +1,136 @@
+<html>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+
+    function MyButton({ text, onClick, disabled, nextMultiple, isDivision }) {
+      const myStyle = text === 'Reset!' ? { margin: 20, display: 'block' } : { margin: 20 };
+
+      return (
+        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+          {isDivision && nextMultiple && (
+            <span style={{ marginRight: 10 }}>{nextMultiple}</span>
+          )}
+          <button
+            onClick={onClick}
+            disabled={disabled}
+            style={myStyle}
+          >
+            {text}
+          </button>
+          {!isDivision && nextMultiple && (
+            <span style={{ marginLeft: 10 }}>{nextMultiple}</span>
+          )}
+        </div>
+      );
+    }
+
+    function MyCounter({ counter }) {
+      return (
+        <span style={{ margin: 20 }}>
+          {counter >= 1000000000 ? 'Selesai!' : counter.toLocaleString()}
+        </span>
+      );
+    }
+
+    function Title() {
+      return (
+        <h1 style={{ margin: 10, fontSize: 24, fontWeight: 'bold' }}>
+          Operasi Pembagian dan Perkalian Angka Puluhan
+        </h1>
+      );
+    }
+
+    function Subtitle() {
+      return (
+        <h2 style={{ margin: 5, fontSize: 18 }}>
+          Maksimal Angka = 1.000.000.000
+        </h2>
+      );
+    }
+
+    function HomePage() {
+      const [counter, setCounter] = React.useState(1);
+      const [nextDivideMultiple, setNextDivideMultiple] = React.useState(null);
+      const [nextMultiplyMultiple, setNextMultiplyMultiple] = React.useState(null);
+
+      // Generate a random multiple of 10 between 10 and 90
+      function getRandomMultipleOfTen() {
+        return Math.floor(Math.random() * 9 + 1) * 10;
+      }
+
+      // Set initial multiples when component mounts
+      React.useEffect(() => {
+        setNextDivideMultiple(getRandomMultipleOfTen());
+        setNextMultiplyMultiple(getRandomMultipleOfTen());
+      }, []);
+
+      function multiply() {
+        const multiplier = nextMultiplyMultiple;
+        const newCounter = counter * multiplier;
+        setCounter(Math.min(newCounter, 1000000000)); // Cap at 1,000,000,000
+        setNextMultiplyMultiple(getRandomMultipleOfTen()); // Update next multiple
+        setNextDivideMultiple(getRandomMultipleOfTen()); // Refresh division multiple
+      }
+
+      function divide() {
+        if (counter >= 10) {
+          const divisor = nextDivideMultiple;
+          const newCounter = Math.floor(counter / divisor);
+          setCounter(Math.max(newCounter, 1)); // Prevent going below 1
+          setNextDivideMultiple(getRandomMultipleOfTen()); // Update next multiple
+          setNextMultiplyMultiple(getRandomMultipleOfTen()); // Refresh multiplication multiple
+        }
+      }
+
+      function reset() {
+        setCounter(1);
+        setNextDivideMultiple(getRandomMultipleOfTen());
+        setNextMultiplyMultiple(getRandomMultipleOfTen());
+      }
+
+      const isFinished = counter >= 1000000000;
+      const isResetDisabled = !isFinished; // Reset disabled until "Selesai!"
+
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Title />
+          <Subtitle />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <MyButton
+              text={'÷'}
+              onClick={divide}
+              disabled={isFinished}
+              nextMultiple={isFinished ? null : nextDivideMultiple}
+              isDivision={true}
+            />
+            <MyCounter counter={counter} />
+            <MyButton
+              text={'×'}
+              onClick={multiply}
+              disabled={isFinished}
+              nextMultiple={isFinished ? null : nextMultiplyMultiple}
+              isDivision={false}
+            />
+          </div>
+          <MyButton
+            text={'Reset!'}
+            onClick={reset}
+            disabled={isResetDisabled}
+            nextMultiple={null}
+            isDivision={false}
+          />
+        </div>
+      );
+    }
+
+    root.render(<HomePage />);
+  </script>
+</body>
+</html>
