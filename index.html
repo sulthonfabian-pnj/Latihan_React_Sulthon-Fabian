@@ -1,7 +1,6 @@
 <html>
 <body>
   <div id="root"></div>
-
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -49,7 +48,7 @@
 
     function Subtitle() {
       return (
-        <h2 style={{ margin: 5, fontSize: 18 }}>
+        <h2 style={{ margin: 5, fontSize: 18, fontStyle: 'italic' }}>
           Maksimal Angka = 1.000.000.000
         </h2>
       );
@@ -60,12 +59,10 @@
       const [nextDivideMultiple, setNextDivideMultiple] = React.useState(null);
       const [nextMultiplyMultiple, setNextMultiplyMultiple] = React.useState(null);
 
-      // Generate a random multiple of 10 between 10 and 90
       function getRandomMultipleOfTen() {
         return Math.floor(Math.random() * 9 + 1) * 10;
       }
 
-      // Set initial multiples when component mounts
       React.useEffect(() => {
         setNextDivideMultiple(getRandomMultipleOfTen());
         setNextMultiplyMultiple(getRandomMultipleOfTen());
@@ -74,18 +71,18 @@
       function multiply() {
         const multiplier = nextMultiplyMultiple;
         const newCounter = counter * multiplier;
-        setCounter(Math.min(newCounter, 1000000000)); // Cap at 1,000,000,000
-        setNextMultiplyMultiple(getRandomMultipleOfTen()); // Update next multiple
-        setNextDivideMultiple(getRandomMultipleOfTen()); // Refresh division multiple
+        setCounter(Math.min(newCounter, 1000000000));
+        setNextMultiplyMultiple(getRandomMultipleOfTen());
+        setNextDivideMultiple(getRandomMultipleOfTen());
       }
 
       function divide() {
         if (counter >= 10) {
           const divisor = nextDivideMultiple;
           const newCounter = Math.floor(counter / divisor);
-          setCounter(Math.max(newCounter, 1)); // Prevent going below 1
-          setNextDivideMultiple(getRandomMultipleOfTen()); // Update next multiple
-          setNextMultiplyMultiple(getRandomMultipleOfTen()); // Refresh multiplication multiple
+          setCounter(Math.max(newCounter, 1));
+          setNextDivideMultiple(getRandomMultipleOfTen());
+          setNextMultiplyMultiple(getRandomMultipleOfTen());
         }
       }
 
@@ -96,7 +93,7 @@
       }
 
       const isFinished = counter >= 1000000000;
-      const isResetDisabled = !isFinished; // Reset disabled until "Selesai!"
+      const isResetDisabled = !isFinished;
 
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
