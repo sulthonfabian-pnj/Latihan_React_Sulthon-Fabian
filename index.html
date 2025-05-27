@@ -1,6 +1,7 @@
 <html>
 <body>
   <div id="root"></div>
+
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -8,32 +9,21 @@
     const container = document.getElementById('root');
     const root = ReactDOM.createRoot(container);
 
-    function MyButton({ text, onClick, disabled, nextMultiple, isDivision }) {
-      const myStyle = text === 'Reset!' ? { margin: 20, display: 'block' } : { margin: 20 };
+    function MyButton({ text, onClick, counter }) {
+      const disabled = (text !== 'Reset!') ? (counter >= 100000 || counter < 1) : (counter >= 100000 ? false : true);
+      const myStyle = (text !== 'Reset!') ? {} : { margin: 20, display: 'block' };
 
       return (
-        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-          {isDivision && nextMultiple && (
-            <span style={{ marginRight: 10 }}>{nextMultiple}</span>
-          )}
-          <button
-            onClick={onClick}
-            disabled={disabled}
-            style={myStyle}
-          >
-            {text}
-          </button>
-          {!isDivision && nextMultiple && (
-            <span style={{ marginLeft: 10 }}>{nextMultiple}</span>
-          )}
-        </div>
+        <button onClick={onClick} disabled={disabled} style={myStyle}>
+          {text}
+        </button>
       );
     }
 
     function MyCounter({ counter }) {
       return (
         <span style={{ margin: 20 }}>
-          {counter >= 1000000000 ? 'Selesai!' : counter.toLocaleString()}
+          {counter >= 100000 ? 'Selesai!' : counter.toLocaleString()}
         </span>
       );
     }
@@ -49,80 +39,42 @@
     function Subtitle() {
       return (
         <h2 style={{ margin: 5, fontSize: 18, fontStyle: 'italic' }}>
-          Maksimal Angka = 1.000.000.000
+          Maksimal Angka = 100.000
         </h2>
       );
     }
 
     function HomePage() {
       const [counter, setCounter] = React.useState(1);
-      const [nextDivideMultiple, setNextDivideMultiple] = React.useState(null);
-      const [nextMultiplyMultiple, setNextMultiplyMultiple] = React.useState(null);
-
-      function getRandomMultipleOfTen() {
-        return Math.floor(Math.random() * 9 + 1) * 10;
-      }
-
-      React.useEffect(() => {
-        setNextDivideMultiple(getRandomMultipleOfTen());
-        setNextMultiplyMultiple(getRandomMultipleOfTen());
-      }, []);
 
       function multiply() {
-        const multiplier = nextMultiplyMultiple;
-        const newCounter = counter * multiplier;
-        setCounter(Math.min(newCounter, 1000000000));
-        setNextMultiplyMultiple(getRandomMultipleOfTen());
-        setNextDivideMultiple(getRandomMultipleOfTen());
+        setCounter(Math.min(counter * 10, 100000));
       }
 
       function divide() {
-        if (counter >= 10) {
-          const divisor = nextDivideMultiple;
-          const newCounter = Math.floor(counter / divisor);
-          setCounter(Math.max(newCounter, 1));
-          setNextDivideMultiple(getRandomMultipleOfTen());
-          setNextMultiplyMultiple(getRandomMultipleOfTen());
-        }
+        setCounter(Math.max(Math.floor(counter / 10), 1));
       }
 
       function reset() {
         setCounter(1);
-        setNextDivideMultiple(getRandomMultipleOfTen());
-        setNextMultiplyMultiple(getRandomMultipleOfTen());
       }
 
-      const isFinished = counter >= 1000000000;
-      const isResetDisabled = !isFinished;
-
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          height: '100vh' 
+        }}>
           <Title />
           <Subtitle />
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <MyButton
-              text={'÷'}
-              onClick={divide}
-              disabled={isFinished}
-              nextMultiple={isFinished ? null : nextDivideMultiple}
-              isDivision={true}
-            />
+            <MyButton text={'÷'} onClick={divide} counter={counter} />
             <MyCounter counter={counter} />
-            <MyButton
-              text={'×'}
-              onClick={multiply}
-              disabled={isFinished}
-              nextMultiple={isFinished ? null : nextMultiplyMultiple}
-              isDivision={false}
-            />
+            <MyButton text={'×'} onClick={multiply} counter={counter} />
           </div>
-          <MyButton
-            text={'Reset!'}
-            onClick={reset}
-            disabled={isResetDisabled}
-            nextMultiple={null}
-            isDivision={false}
-          />
+          <MyButton text={'Reset!'} onClick={reset} counter={counter} />
         </div>
       );
     }
